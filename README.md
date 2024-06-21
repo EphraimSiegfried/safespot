@@ -57,14 +57,14 @@ The first entry ensures that your domain name points to your server and the seco
 
 To later be able to access the server remotely, we can use SSH. Safespot configures the SSH server such that the user can only authenticate with [public key authentication](https://www.ssh.com/academy/ssh/public-key-authentication). For this we need to generate a key-pair. Install ssh on your operating system, then create a key-pair with this command:
 
-```sh
+```bash
 # The following uses an eliptic curve crypto algorithm to generate a key-pair
 ssh-keygen -t ed25519
 ```
 
 Put the output of the following command in the $SSH_PUBLIC_KEY environment variable
 
-```
+```bash
 ~/.ssh/id_rsa.pub
 ```
 
@@ -72,7 +72,7 @@ Put the output of the following command in the $SSH_PUBLIC_KEY environment varia
 
 Gain access to your server console and clone this repository by typing in those commands
 
-```sh
+```bash
 sudo apt upgrade && sudo apu install git
 git clone https://github.com/EphraimSiegfried/safespot.git
 cd safespot
@@ -85,7 +85,7 @@ cd safespot
 
 Create a new user and set zsh as the default shell with this command. This will be your main user with the name set to the env variable $ADMIN.
 
-```sh
+```bash
 ./src/user/setup_user.sh
 # Create a password for your account
 passwd $ADMIN
@@ -95,7 +95,7 @@ passwd $ADMIN
 
 Next, we can set up the firewall and SSH server for remote access. Execute the following commands:
 
-```sh
+```bash
 ./src/firewall/setup_firewall.sh
 ./src/ssh_server/setup_ssh.sh
 ```
@@ -106,7 +106,7 @@ Test if you can log in to your server remotely by entering `ssh <your-admin-name
 
 Finally, the following commands will set up the docker stack, which serves as a secure entry point for hosting your own applications.
 
-```
+```bash
 ./src/docker/install_docker.sh
 ./src/docker/setup_compose.sh
 ```

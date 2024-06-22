@@ -3,7 +3,6 @@ global:
   smtp_smarthost: 'smtp-mail.outlook.com:587'
   smtp_from: 'alert.${DOMAIN_NAME}@outlook.com'
   smtp_auth_username: 'alert.${DOMAIN_NAME}@outlook.com'
-  #smtp_auth_password: "Powerhouse"
   smtp_auth_password: "${ALERTMANAGER_PASS}"
 
 # The root route on which each incoming alert enters.

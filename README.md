@@ -26,7 +26,7 @@ The stack can be easily extended with custom docker compose files.
     - [Creating a user](#creating-a-user)
     - [Enabling SSH](#enabling-ssh)
     - [Adjust the environment variables](#adjust-the-environment-variables)
-    - [Deploy the docker stack!](#deploy-the-docker-stack-)
+    - [Deploy the docker stack](#deploy-the-docker-stack)
   - [Deploy your own services](#deploy-your-own-services)
   - [Known restrictions](#known-restrictions)
 
@@ -132,7 +132,7 @@ Two things to note when using environment variables:
 - They're only available in the current shell session. So don't close the shell before deploying the services
 - When you want to change the value of a env variable, delete the ``/opt/docker.env`` file and run the script again
 
-#### Deploy the docker stack!
+#### Deploy the docker stack
 
 Finally, the following commands will set up the single node Docker Swarm, which serves as a secure entry point for hosting your own applications.
 

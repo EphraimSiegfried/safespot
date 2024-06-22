@@ -1,6 +1,9 @@
 #!/bin/bash
+
+docker network create --driver overlay --attachable monitor-net
+
 start() {
-	docker compose -f $COMPOSE_DIR/"$1"/docker-compose.yml up -d
+	docker stack deploy -c $COMPOSE_DIR/"$1"/docker-compose.yml traefik-stack
 }
 
 # Ensure script stops on errors and missing env variables
@@ -10,17 +13,14 @@ set -e
 # REQUIRED_VARS=("ADMIN")
 # check_vars "${REQUIRED_VARS[@]}"
 
-COMPOSE_DIR=opt/docker
+COMPOSE_DIR=/opt/docker
 
 cp -R "$SCRIPT_DIR"/compose $COMPOSE_DIR
 
-docker network create -d bridge proxy
-docker network create -d bridge monitor-net
-
 start traefik
 start forward-auth
-start prometheus
 start crowdsec
+start prometheus
 start node-exporter
 start alertmanager
 start grafana

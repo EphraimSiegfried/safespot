@@ -24,4 +24,5 @@ start prometheus
 start node-exporter
 start alertmanager
 start grafana
+start watchtower
 start whoami

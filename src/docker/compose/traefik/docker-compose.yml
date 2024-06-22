@@ -1,0 +1,76 @@
+services:
+  traefik:
+    container_name: ${SERVICES_TRAEFIK_CONTAINER_NAME:-traefik}
+    hostname: ${SERVICES_TRAEFIK_HOSTNAME:-traefik}
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck", "--ping"]
+      interval: 10s
+      timeout: 1s
+      retries: 3
+      start_period: 10s
+    image: ${SERVICES_TRAEFIK_IMAGE:-traefik}:${SERVICES_TRAEFIK_IMAGE_VERSION:-3.0}
+    secrets:
+      - cloudflare_api
+    environment:
+      - CF_API_EMAIL=${CF_API_EMAIL}
+      - CF_API_KEY=/run/secrets/cloudflare_api
+    labels:
+      - "traefik.docker.network=proxy"
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.routers.traefik.middlewares=default@file"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.tls=true"
+      - "traefik.http.routers.traefik.tls.certresolver=cloudflare"
+      - "traefik.http.routers.traefik.tls.domains[0].main=*.${DOMAIN_NAME}"
+      - "traefik.http.routers.traefik.tls.domains[0].sans=${DOMAIN_NAME}"
+      - "traefik.http.services.traefik.loadbalancer.sticky.cookie.httpOnly=true"
+      - "traefik.http.services.traefik.loadbalancer.sticky.cookie.secure=true"
+      - "traefik.http.routers.pingweb.rule=PathPrefix(`/ping`)"
+      - "traefik.http.routers.pingweb.service=ping@internal"
+      - "traefik.http.routers.pingweb.entrypoints=websecure"
+    networks:
+      crowdsec:
+        ipv4_address: ${SERVICES_TRAEFIK_NETWORKS_CROWDSEC_IPV4:-172.31.254.253}
+      proxy:
+        ipv4_address: ${SERVICES_TRAEFIK_NETWORKS_PROXY_IPV4:-172.30.255.254}
+    ports:
+      - mode: host
+        target: 80
+        published: 80
+        protocol: tcp
+      - mode: host
+        target: 443
+        published: 443
+        protocol: tcp
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/var/log/traefik/:/var/log/traefik/"
+      - "./traefik/traefik.yml:/traefik.yml:ro"
+      - "./traefik/acme_letsencrypt.json:/acme_letsencrypt.json"
+      - "./traefik/dynamic_conf.yml:/dynamic_conf.yml"
+
+networks:
+  proxy:
+    name: ${NETWORKS_PROXY_NAME:-proxy}
+    driver: overlay
+    ipam:
+      config:
+      - subnet: ${NETWORKS_PROXY_SUBNET_IPV4:-172.30.0.0/16}
+    attachable: true
+  crowdsec:
+    name: ${NETWORKS_CROWDSEC_NAME:-crowdsec}
+    driver: overlay
+    ipam:
+      config:
+      - subnet: ${NETWORKS_CROWDSEC_SUBNET_IPV4:-172.31.0.0/16}
+    attachable: true
+
+secrets:
+  cloudflare_api:
+    external: true

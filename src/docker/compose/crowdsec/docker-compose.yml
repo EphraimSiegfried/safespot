@@ -1,0 +1,40 @@
+services:
+  crowdsec:
+    container_name: ${SERVICES_CROWDSEC_CONTAINER_NAME:-crowdsec}
+    env_file: ./config/crowdsec.env
+    hostname: ${SERVICES_CROWDSEC_HOSTNAME:-crowdsec}
+    healthcheck:
+      test: ["CMD", "cscli", "version"]
+      interval: 20s
+      timeout: 2s
+      retries: 5
+      start_period: 10s
+    image: ${SERVICES_CROWDSEC_IMAGE:-crowdsecurity/crowdsec}:${SERVICES_CROWDSEC_IMAGE_VERSION:-latest}
+    networks:
+      crowdsec:
+        ipv4_address: ${SERVICES_CROWDSEC_NETWORKS_CROWDSEC_IPV4:-172.31.254.254}
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges=true
+    volumes:
+      - "/etc/localtime:/etc/localtime:ro"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "/var/log/auth.log:/var/log/auth.log:ro"
+      - "/var/log/traefik:/var/log/traefik:ro"
+      - "./crowdsec/config:/etc/crowdsec"
+      - "./crowdsec/data:/var/lib/crowdsec/data"
+  traefik_crowdsec_bouncer:
+    container_name: ${SERVICES_TRAEFIK_CROWDSEC_BOUNCER_CONTAINER_NAME:-traefik_crowdsec_bouncer}
+    depends_on:
+      - crowdsec
+    env_file: ./config/traefik-crowdsec-bouncer.env
+    hostname: ${SERVICES_TRAEFIK_CROWDSEC_BOUNCER_HOSTNAME:-traefik-crowdsec-bouncer}
+    image: ${SERVICES_TRAEFIK_CROWDSEC_BOUNCER_IMAGE:-fbonalair/traefik-crowdsec-bouncer}:${SERVICES_TRAEFIK_CROWDSEC_BOUNCER_IMAGE_VERSION:-latest}
+    networks:
+      crowdsec:
+        ipv4_address: ${SERVICES_TRAEFIK_CROWDSEC_BOUNCER_NETWORKS_CROWDSEC_IPV4:-172.31.254.252}
+    restart: unless-stopped
+networks:
+  crowdsec:
+    external: true
+    name: crowdsec

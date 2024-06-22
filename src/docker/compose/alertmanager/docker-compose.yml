@@ -1,0 +1,35 @@
+services:
+  alertmanager:
+    image: prom/alertmanager:v0.25.0
+    volumes:
+      - ./alertmanager-data:/data
+      - ./config:/config
+    secrets:
+      - alertmanager_password
+    environment:
+      - ALERTMANAGER_PASS=/run/secrets/alertmanager_password
+    command: --config.file=/config/alertmanager.yml --log.level=debug
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.alertmanager.entrypoints=websecure"
+      - "traefik.http.routers.alertmanager.tls.certresolver=cloudflare"
+      - "traefik.http.routers.alertmanager.rule=Host(`alerts.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.alertmanager.service=alertmanager"
+      - "traefik.http.services.alertmanager.loadbalancer.server.port=9093"
+      - "traefik.docker.network=proxy"
+    networks:
+      - monitor-net
+      - proxy
+
+networks:
+  monitor-net:
+    external: true
+    name: monitor-net
+  proxy:
+    external: true
+    name: proxy
+
+secrets:
+  alertmanager_password:
+    external: true
+    name: alertmanager_password

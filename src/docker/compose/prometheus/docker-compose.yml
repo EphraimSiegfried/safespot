@@ -1,0 +1,37 @@
+services:
+  prometheus:
+    image: prom/prometheus
+    user: root
+    container_name: "prometheus"
+    hostname: "prometheus"
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./config/rules.yml:/etc/prometheus/rules.yml:ro
+      - ./prometheus-data:/prometheus
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.prometheus.entrypoints=websecure"
+      - "traefik.http.routers.prometheus.tls.certresolver=cloudflare"
+      - "traefik.http.routers.prometheus.rule=Host(`prom.${DOMAIN_NAME}`)"
+      - "traefik.http.routers.prometheus.service=prometheus"
+      - "traefik.http.services.prometheus.loadbalancer.server.port=9090"
+      - "traefik.docker.network=proxy"
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    networks:
+      - proxy
+      - monitor-net
+    restart: unless-stopped
+
+networks:
+  proxy:
+    external: true
+    name: proxy
+  monitor-net:
+    external: true
+    name: monitor-net
+
+

@@ -1,0 +1,59 @@
+groups:
+- name: node_alerts
+  rules:
+  - alert: HighCPUUsage
+    expr: 100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage detected"
+      description: "CPU usage is above 90% for more than 5 minutes on instance {{ $labels.instance }}."
+
+  - alert: HighMemoryUsage
+    expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes * 100 < 10
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High Memory usage detected"
+      description: "Available memory is less than 10% for more than 5 minutes on instance {{ $labels.instance }}."
+
+  - alert: HighDiskUsage
+    expr: (node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs"} - node_filesystem_free_bytes{fstype!~"tmpfs|fuse.lxcfs"}) / node_filesystem_size_bytes{fstype!~"tmpfs|fuse.lxcfs"} * 100 > 80
+    for: 10m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High Disk usage detected"
+      description: "Disk usage is above 80% for more than 10 minutes on instance {{ $labels.instance }}."
+
+- name: traefik_alerts
+  rules:
+  - alert: HighRequestLatency
+    expr: histogram_quantile(0.99, sum(rate(traefik_service_request_duration_seconds_bucket[1m])) by (le, service)) > 1
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High request latency detected"
+      description: "99th percentile request latency is above 1 second for service {{ $labels.service }}."
+
+  - alert: HighRequestRate
+    expr: sum(rate(traefik_service_requests_total[1m])) by (service) > 1000
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High request rate detected"
+      description: "Service {{ $labels.service }} is receiving more than 1000 requests per second."
+
+  - alert: TraefikServiceDown
+    expr: up{job="traefik"} == 0
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Traefik service down"
+      description: "Traefik service {{ $labels.instance }} is down for more than 5 minutes."
+

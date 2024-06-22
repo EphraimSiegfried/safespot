@@ -29,6 +29,7 @@ The stack can be easily extended with custom docker compose files.
     - [Adjust the environment variables](#adjust-the-environment-variables)
     - [Deploy the docker stack](#deploy-the-docker-stack)
     - [Set up Logrotation and cronjob](#set-up-logrotation-and-cronjob)
+    - [Set up unattended-upgrades](#set-up-unattended-upgrades)
   - [Deploy your own services](#deploy-your-own-services)
   - [License](#license)
 
@@ -197,6 +198,13 @@ We can set up a cronjob to automate it:
 3. ``crontab -l`` to list the file and see, if the new line is in there
 4. ``/usr/sbin/logrotate -f /etc/logrotate.conf`` to test the new cronjob
 5. To check, if forcing the new job worked, we go to the log folder (``cd /var/log/traefik``) and inspect the log files (``ls -ltr``).
+
+#### Set up unattended-upgrades
+
+This package provides the functionality to automatically download and install important security patches. This is how you can set it up:
+```bash
+sudo dpkg-reconfigure -plow unattended-upgrades
+```
 
 ### Deploy your own services
 

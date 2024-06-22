@@ -25,15 +25,17 @@ The stack can be easily extended with custom docker compose files.
   - [Installing safespot on the server](#installing-safespot-on-the-server)
     - [Creating a user](#creating-a-user)
     - [Enabling SSH](#enabling-ssh)
+    - [Create certificates for wildcards](#create-certificates-for-wildcards)
     - [Adjust the environment variables](#adjust-the-environment-variables)
     - [Deploy the docker stack](#deploy-the-docker-stack)
+    - [Set up Logrotation and cronjob](#set-up-logrotation-and-cronjob)
   - [Deploy your own services](#deploy-your-own-services)
-  - [Known restrictions](#known-restrictions)
 
 ## Requirements
 
 - Ubuntu Server (might work on other distributions as well)
 - Domain Name
+- A Google account since we're using the forward authentication from them
 
 ## Setup
 
@@ -67,11 +69,11 @@ Since we're using forward authentication from Google, you will need to add the d
 4. If it's a new project, Google will tell you to fill out the OAuth consent screen. Do that
 5. Return back to 'Credentials' and press the button 'Create Credentials -> OAuth client ID'.
 6. Choose 'Web Application', fill in the name of your app, skip 'Authorized JavaScript origins' and fill out 'Authorized redirect URIs with the following domains:
-   - https://whoami.safespot.ch/_oauth
-   - https://prom.safespot.ch/_oauth
-   - https://monitor.safespot.ch/_oauth
-   - https://traefik.safespot.ch/_oauth
-   - https://alerts.safespot.ch/_oauth
+   - https://whoami.<your-domain>.com/_oauth
+   - https://prom.<your-domain>.com/_oauth
+   - https://monitor.<your-domain>.com/_oauth
+   - https://traefik.<your-domain>.com/_oauth
+   - https://alerts.<your-domain>.com/_oauth
 7. Once you clicked 'Create' on the bottom, a new window will pop up with 'Client ID' and 'Client secret'. Write them both down because you will need them later.
 
 ### Generate an SSH key-pair
@@ -123,6 +125,15 @@ Next, we can set up the firewall and SSH server for remote access. Execute the f
 
 Test if you can log in to your server remotely by entering `ssh <your-admin-name>@<your-domain>`
 
+#### Create certificates for wildcards
+
+So we don't have to add a certificate for every subdomain, we can use 'letsencrypt' to handle that for us. Following has to be done:
+```bash
+apt-get install letsencrypt # installs CertBot
+certbot certonly --manual --preferred-challenges=dns -d '*.<your-domain>.com' # runs certbot
+```
+Next, we have to go to Cloudflare and create a new DNS record with the type TXT. To see that it worked, you can use the homepage that CertBot suggests
+
 #### Adjust the environment variables
 
 For our different Docker services, we're using environment variables. With them, we only have to set the correct variable once and not have to change it several times.
@@ -130,7 +141,8 @@ Open the file ``config.sh`` and adjust the different values. Once done, execute 
 When executing it, the env variables get exported so the Docker stack can find them, and they get written into the file ``/opt/docker/.env`` so they can be looked at if they were forgotten.
 Two things to note when using environment variables:
 - They're only available in the current shell session. So don't close the shell before deploying the services
-- When you want to change the value of a env variable, delete the ``/opt/docker.env`` file and run the script again
+- When you want to change the value of an env variable, change the value and run the script again
+- With the command ``echo $VARIABLE`` (ex. DOMAIN_NAME), you can look at the value of it 
 
 #### Deploy the docker stack
 
@@ -141,17 +153,50 @@ Finally, the following commands will set up the single node Docker Swarm, which 
 sudo docker swarm init # creates a single node docker swarm
 echo "your_cloudflare_api" | docker secret create cloudflare_api - # creates the secret for your cloudflare_api
 echo "your_alertmanagerpassword" | docker secret create alertmanager_password - # creates the secret for your alertmanager_password
+docker secret create traefik-forward-auth-v8 /opt/docker/traefik/traefik-forward-auth # creates the secret for forward-auth
 ./src/docker/setup_compose.sh
-docker secret create traefik-forward-auth-v8 ./traefik-forward-auth # creates the secret for forward-auth
 ```
 
 To test if everything worked, enter 'whoami.<your-domain>.com'. It might take a moment before you see the authentication screen from Google.
+
+If something isn't working as intended, you can use these different commands to figure the problem out:
+```bash
+docker stack ls # list all stacks (should be one)
+docker stack services traefik-stack # list services inside stack. Under 'Replicas', each entry should have a 1/1. If not, then something hasn't worked
+docker service inspect <service-name> # inspect a service to get detailed information
+docker service logs <service-name> # look at the logs of a service
+```
+
+#### Set up Logrotation and cronjob
+
+If leaving the logs unattended, they can get big and eat a lot of hard drive space up. For that we can set up a logrotation that rotates the logs in specific intervals
+1. Create logrotate config file with ``nano /etc/logrotate.d/traefik``. Content is:
+```bash
+/var/log/traefik/*.log {
+    daily
+    rotate 7
+    missingok
+    notifempty
+    compress
+    delaycompress
+    create 0644 root root
+    sharedscripts
+    postrotate
+        docker-compose exec traefik killall -HUP traefik
+    endscript
+}
+```
+2. Check with ``logrotate -d /etc/logrotate.d/traefik`` to see, if everything worked
+3. If there aren't any errors, use ``logrotate /etc/logrotate.d/traefik`` to manually rotate logs
+
+We can set up a cronjob to automate it:
+1. ``crontab -e`` to open crontab file
+2. Add ``0 0 * * * /usr/sbin/logrotate -f /etc/logrotate.conf >/dev/null 2>&1`` to the end
+3. ``crontab -l`` to list the file and see, if the new line is in there
+4. ``/usr/sbin/logrotate -f /etc/logrotate.conf`` to test the new cronjob
+5. To check, if forcing the new job worked, we go to the log folder (``cd /var/log/traefik``) and inspect the log files (``ls -ltr``).
 
 ### Deploy your own services
 
 All the docker compose files are located in **/opt/docker**. You can define your own docker compose files in there and start them. Make sure your containers are communicating with Traefik via the **proxy** network, such that traefik can route requests to your container.
 Use the following command to deploy a new service ``docker stack deploy -c /opt/docker/<your-service>/docker-compose.yml traefik-stack``
-
-### Known restrictions
-
-- Since we're using Google forward authentication, you'll need a Google account

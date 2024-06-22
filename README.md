@@ -30,6 +30,7 @@ The stack can be easily extended with custom docker compose files.
     - [Deploy the docker stack](#deploy-the-docker-stack)
     - [Set up Logrotation and cronjob](#set-up-logrotation-and-cronjob)
   - [Deploy your own services](#deploy-your-own-services)
+  - [License](#license)
 
 ## Requirements
 
@@ -99,6 +100,7 @@ Gain access to your server console and clone this repository by typing in those 
 sudo apt upgrade && sudo apu install git
 git clone https://github.com/EphraimSiegfried/safespot.git
 cd safespot
+./src/config.sh
 ```
 
 > [!NOTE]
@@ -137,7 +139,7 @@ Next, we have to go to Cloudflare and create a new DNS record with the type TXT.
 #### Adjust the environment variables
 
 For our different Docker services, we're using environment variables. With them, we only have to set the correct variable once and not have to change it several times.
-Open the file ``config.sh`` and adjust the different values. Once done, execute it with ``./config.sh``
+Open the file ``src/config.sh`` and adjust the different values. Once done, execute it with ``./src/config.sh``.
 When executing it, the env variables get exported so the Docker stack can find them, and they get written into the file ``/opt/docker/.env`` so they can be looked at if they were forgotten.
 Two things to note when using environment variables:
 - They're only available in the current shell session. So don't close the shell before deploying the services
@@ -200,3 +202,7 @@ We can set up a cronjob to automate it:
 
 All the docker compose files are located in **/opt/docker**. You can define your own docker compose files in there and start them. Make sure your containers are communicating with Traefik via the **proxy** network, such that traefik can route requests to your container.
 Use the following command to deploy a new service ``docker stack deploy -c /opt/docker/<your-service>/docker-compose.yml traefik-stack``
+
+## License
+
+This project is under the [MIT license](license.md) registered

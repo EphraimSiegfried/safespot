@@ -55,8 +55,8 @@ Then create an account on [Cloudflare](https://www.cloudflare.com/) and [change 
 
 Once Cloudflare is your name server, go to Cloudflare's dashboard, click DNS > Records. Then add the following records:
 
-- A – \<your-domain\> – \<server-public-ip\> – proxy enabled
-- CNAME – \* – \<your-domain\> – proxy enabled
+- A – \<your-domain\> – \<server-public-ip\> – proxy disabled
+- CNAME – \* – \<your-domain\> – proxy disabled
 
 The first entry ensures that your domain name points to your server and the second entry ensures that all subdomains (e.g example.your-domain.com) will also point to your server, also known as wildcard DNS record.
 
@@ -83,7 +83,7 @@ Since we're using forward authentication from Google, you will need to add the d
 To later be able to access the server remotely, we can use SSH. Safespot configures the SSH server such that the user can only authenticate with [public key authentication](https://www.ssh.com/academy/ssh/public-key-authentication). For this we need to generate a key-pair. Install ssh on your operating system, then create a key-pair with this command:
 
 ```bash
-# The following uses an eliptic curve crypto algorithm to generate a key-pair
+# The following uses an elliptic curve crypto algorithm to generate a key-pair
 ssh-keygen -t ed25519
 ```
 
@@ -101,8 +101,7 @@ Gain access to your server console and clone this repository by typing in those 
 sudo apt update && sudo apt upgrade && sudo apt install git
 git clone https://github.com/EphraimSiegfried/safespot.git
 cd safespot
-chmod +x ./src/config.sh
-chmod +x ./src/setup_env.sh
+chmod +x ./src/config.sh && chmod +x ./src/setup_env.sh
 source ./src/config.sh
 sudo env # to check that they're there
 ```
@@ -115,7 +114,8 @@ sudo env # to check that they're there
 Create a new user and set zsh as the default shell with this command. This will be your main user with the name set to the env variable $ADMIN.
 
 ```bash
-./src/user/setup_user.sh
+chmod +x ./src/user/setup_user.sh
+sudo ./src/user/setup_user.sh
 # Create a password for your account
 passwd $ADMIN
 ```
@@ -125,8 +125,9 @@ passwd $ADMIN
 Next, we can set up the firewall and SSH server for remote access. Execute the following commands:
 
 ```bash
-./src/firewall/setup_firewall.sh
-./src/ssh_server/setup_ssh.sh
+chmod +x ./src/firewall/setup_firewall.sh && chmod +x ./src/ssh_server/setup_ssh.sh
+sudo ./src/firewall/setup_firewall.sh
+sudo ./src/ssh_server/setup_ssh.sh
 ```
 
 Test if you can log in to your server remotely by entering `ssh <your-admin-name>@<your-domain>`
@@ -146,31 +147,31 @@ For our different Docker services, we're using environment variables. With them,
 Open the file ``src/config.sh`` and adjust the different values. Once done, execute it with ``./src/config.sh``.
 When executing it, the env variables get exported so the Docker stack can find them, and they get written into the file ``/opt/docker/.env`` so they can be looked at if they were forgotten.
 Two things to note when using environment variables:
-- They're only available in the current shell session. So don't close the shell before deploying the services
 - When you want to change the value of an env variable, change the value and run the script again
-- With the command ``echo $VARIABLE`` (ex. DOMAIN_NAME), you can look at the value of it 
+- With the command ``echo $VARIABLE`` (ex. ``echo $DOMAIN_NAME``), you can look at the value of it 
 
 #### Deploy the docker stack
 
 Finally, the following commands will set up the single node Docker Swarm, which serves as a secure entry point for hosting your own applications.
 
 ```bash
-./src/docker/install_docker.sh
+chmod +x ./src/docker/install_docker.sh && chmod +x ./src/docker/setup_compose.sh
+sudo ./src/docker/install_docker.sh
 sudo docker swarm init # creates a single node docker swarm
-echo "your_cloudflare_api" | docker secret create cloudflare_api - # creates the secret for your cloudflare_api
-echo "your_alertmanagerpassword" | docker secret create alertmanager_password - # creates the secret for your alertmanager_password
-docker secret create traefik-forward-auth-v8 /opt/docker/traefik/traefik-forward-auth # creates the secret for forward-auth
-./src/docker/setup_compose.sh
+echo "your_cloudflare_api" | sudo docker secret create cloudflare_api - # creates the secret for your cloudflare_api
+echo "your_alertmanagerpassword" | sudo docker secret create alertmanager_password - # creates the secret for your alertmanager_password
+sudo touch /opt/docker/forward-auth/traefik-forward-auth
+sudo ./src/docker/setup_compose.sh
 ```
 
 To test if everything worked, enter 'whoami.<your-domain>.com'. It might take a moment before you see the authentication screen from Google.
 
 If something isn't working as intended, you can use these different commands to figure the problem out:
 ```bash
-docker stack ls # list all stacks (should be one)
-docker stack services traefik-stack # list services inside stack. Under 'Replicas', each entry should have a 1/1. If not, then something hasn't worked
-docker service inspect <service-name> # inspect a service to get detailed information
-docker service logs <service-name> # look at the logs of a service
+sudo docker stack ls # list all stacks (should be one)
+sudo docker stack services traefik-stack # list services inside stack. Under 'Replicas', each entry should have a 1/1. If not, then something hasn't worked
+sudo docker service inspect <service-name> # inspect a service to get detailed information
+sudo docker service logs <service-name> # look at the logs of a service
 ```
 
 #### Set up Logrotation and cronjob

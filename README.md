@@ -103,8 +103,8 @@ git clone https://github.com/EphraimSiegfried/safespot.git
 cd safespot
 chmod +x ./src/config.sh
 chmod +x ./src/setup_env.sh
-./src/config.sh
-./src/setup_env.sh
+source ./src/config.sh
+sudo env # to check that they're there
 ```
 
 > [!NOTE]

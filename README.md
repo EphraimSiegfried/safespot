@@ -90,7 +90,7 @@ ssh-keygen -t ed25519
 Put the output of the following command in the $SSH_PUBLIC_KEY environment variable
 
 ```bash
-~/.ssh/id_rsa.pub
+cat ~/.ssh/id_ed25519.pub
 ```
 
 ### Installing safespot on the server
@@ -98,9 +98,11 @@ Put the output of the following command in the $SSH_PUBLIC_KEY environment varia
 Gain access to your server console and clone this repository by typing in those commands
 
 ```bash
-sudo apt upgrade && sudo apu install git
+sudo apt update && sudo apt upgrade && sudo apt install git
 git clone https://github.com/EphraimSiegfried/safespot.git
 cd safespot
+chmod +x ./src/config.sh
+chmod +x ./src/setup_env.sh
 ./src/config.sh
 ./src/setup_env.sh
 ```

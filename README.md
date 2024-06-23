@@ -185,7 +185,8 @@ If leaving the logs unattended, they can get big and eat a lot of hard drive spa
     create 0644 root root
     sharedscripts
     postrotate
-        docker-compose exec traefik killall -HUP traefik
+        TRAEFIK_CONTAINER_ID=$(sudo docker ps --filter "name=traefik-stack_traefik.1" --format "{{.ID}}" | head -n 1)
+        docker exec "$TRAEFIK_CONTAINER_ID" killall -HUP traefik
     endscript
 }
 ```

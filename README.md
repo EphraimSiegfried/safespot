@@ -177,7 +177,7 @@ sudo docker service logs <service-name> # look at the logs of a service
 #### Set up Logrotation and cronjob
 
 If leaving the logs unattended, they can get big and eat a lot of hard drive space up. For that we can set up a logrotation that rotates the logs in specific intervals
-1. Create logrotate config file with ``nano /etc/logrotate.d/traefik``. Content is:
+1. Create logrotate config file with ``sudo nano /etc/logrotate.d/traefik``. Content is:
 ```bash
 /var/log/traefik/*.log {
     daily
@@ -194,8 +194,8 @@ If leaving the logs unattended, they can get big and eat a lot of hard drive spa
     endscript
 }
 ```
-2. Check with ``logrotate -d /etc/logrotate.d/traefik`` to see, if everything worked
-3. If there aren't any errors, use ``logrotate /etc/logrotate.d/traefik`` to manually rotate logs
+2. Check with ``sudo logrotate -d /etc/logrotate.d/traefik`` to see, if everything worked
+3. If there aren't any errors, use ``sudo logrotate /etc/logrotate.d/traefik`` to manually rotate logs
 
 We can set up a cronjob to automate it:
 1. ``crontab -e`` to open crontab file

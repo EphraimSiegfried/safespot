@@ -23,6 +23,5 @@ export FORWARD_AUTH_USER_EMAIL2=admin@mail.com # this can be either the same ema
 export CF_API_EMAIL=admin@mail.com
 
 # For forward-auth
-touch /opt/docker/forward-auth/traefik-forward-auth
 export GOOGLE_CLIENT_ID=your-google-client-id
 export GOOGLE_CLIENT_SECRET=your-google-client-source

@@ -18,6 +18,7 @@ COMPOSE_DIR=/opt/docker
 
 cp -R "$SCRIPT_DIR"/compose $COMPOSE_DIR
 
+touch /opt/docker/forward-auth/traefik-forward-auth
 echo "providers.google.client-id=$GOOGLE_CLIENT_ID" >> $COMPOSE_DIR/forward-auth/traefik-forward-auth
 echo "providers.google.client-secret=$GOOGLE_CLIENT_SECRET" >> $COMPOSE_DIR/forward-auth/traefik-forward-auth
 echo "secret=" >> $COMPOSE_DIR/forward-auth/traefik-forward-auth

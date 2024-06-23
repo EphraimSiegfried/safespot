@@ -1,5 +1,4 @@
-# Creates the .env file which holdes all the environment variables
-touch /opt/docker/.env
+#!/bin/bash
 
 # The user name for the main account on the server
 export ADMIN=admin
@@ -8,7 +7,7 @@ export ADMIN=admin
 export DOMAIN_NAME=example.com
 
 # The public key generated at the client host
-export SSH_PUBLIC_KEY=
+export SSH_PUBLIC_KEY=your-public-key
 
 # The email settings for server alerts (e.g. Alert: extrem high CPU utilization)
 export ALERTS_SMTP_SERVER=smtp-mail.outlook.com # this is the smtp-server for outlook but any mail server can be used

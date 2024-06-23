@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Ensure script stops on errors and missing env variables
 set -e
 SCRIPT_DIR=$(dirname $(realpath $0))

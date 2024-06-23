@@ -102,6 +102,7 @@ sudo apt upgrade && sudo apu install git
 git clone https://github.com/EphraimSiegfried/safespot.git
 cd safespot
 ./src/config.sh
+./src/setup_env.sh
 ```
 
 > [!NOTE]

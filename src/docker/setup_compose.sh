@@ -1,7 +1,7 @@
 #!/bin/bash
 
 start() {
-	docker stack deploy -c $COMPOSE_DIR/"$1"/docker-compose.yml traefik-stack
+	-E docker stack deploy -c $COMPOSE_DIR/"$1"/docker-compose.yml traefik-stack
 }
 
 systemctl enable docker # docker runs on boot

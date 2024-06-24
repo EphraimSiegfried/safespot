@@ -26,6 +26,17 @@ echo "providers.google.client-secret=$GOOGLE_CLIENT_SECRET" | sudo tee -a $COMPO
 echo "secret=" | sudo tee -a $COMPOSE_DIR/forward-auth/traefik-forward-auth
 sudo docker secret create traefik-forward-auth-v8 $COMPOSE_DIR/forward-auth/traefik-forward-auth # creates the secret for forward-auth
 
+# Create different folders
+mkdir /var/log/traefik # log files for traefik
+mkdir $COMPOSE_DIR/prometheus/prometheus-data # data folder for prometheus
+mkdir $COMPOSE_DIR/grafana/grafana_data # data folder for grafana
+mkdir $COMPOSE_DIR/crowdsec/crowdsec/data # data folder for crowdsec
+mkdir $COMPOSE_DIR/alertmanager/alertmanager-data # data folder for alertmanager
+
+# Create the ACME certificate file and give it 600 permission
+touch $COMPOSE_DIR/traefik/traefik/acme_letsencrypt.json
+chmod 600 $COMPOSE_DIR/traefik/traefik/acme_letsencrypt.json
+
 # Starts each of the services we have implemented
 start traefik
 start forward-auth

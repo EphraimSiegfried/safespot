@@ -21,17 +21,15 @@ The stack can be easily extended with custom docker compose files.
   - [Prepare Setup](#prepare-setup)
   - [Buy a domain and configure DNS](#buy-a-domain-and-configure-dns)
   - [Create the forward subdomains on Google](#create-the-forward-subdomains-on-google)
-  - [Generate an SSH key-pair](#generate-an-ssh-key-pair)
   - [Installing safespot on the server](#installing-safespot-on-the-server)
-    - [Creating a user](#creating-a-user)
+    - [Adjust the environment variables](#adjust-the-environment-variables)
     - [Enabling SSH](#enabling-ssh)
     - [Create certificates for wildcards](#create-certificates-for-wildcards)
-    - [Adjust the environment variables](#adjust-the-environment-variables)
     - [Deploy the docker stack](#deploy-the-docker-stack)
     - [Set up Logrotation and cronjob](#set-up-logrotation-and-cronjob)
     - [Set up unattended-upgrades](#set-up-unattended-upgrades)
   - [Deploy your own services](#deploy-your-own-services)
-  - [License](#license)
+- [License](#license)
 
 ## Requirements
 

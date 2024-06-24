@@ -24,7 +24,6 @@ The stack can be easily extended with custom docker compose files.
   - [Installing safespot on the server](#installing-safespot-on-the-server)
     - [Adjust the environment variables](#adjust-the-environment-variables)
     - [Enabling SSH](#enabling-ssh)
-    - [Create certificates for wildcards](#create-certificates-for-wildcards)
     - [Deploy the docker stack](#deploy-the-docker-stack)
     - [Set up Logrotation and cronjob](#set-up-logrotation-and-cronjob)
     - [Set up unattended-upgrades](#set-up-unattended-upgrades)
@@ -134,17 +133,6 @@ sudo bash -c "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config.d/sshd.co
 sudo service sshd restart
 ```
 
-#### Create certificates for wildcards
-
-So we don't have to add a certificate for every subdomain, we can use 'letsencrypt' to handle that for us. Following has to be done:
-
-```bash
-apt-get install letsencrypt # installs CertBot
-certbot certonly --manual --preferred-challenges=dns -d '*.<your-domain>.com' # runs certbot
-```
-
-Next, we have to go to Cloudflare and create a new DNS record with the type TXT. To see that it worked, you can use the homepage that CertBot suggests
-
 #### Deploy the docker stack
 
 Finally, the following commands will set up the single node Docker Swarm, which serves as a secure entry point for hosting your own applications.
@@ -161,7 +149,7 @@ set -o history # turn it back on
 sudo ./src/docker/setup_compose.sh
 ```
 
-To test if everything worked, enter 'whoami.<your-domain>.com'. It might take a moment before you see the authentication screen from Google.
+To test if everything worked, enter 'whoami.\<your-domain\>.com'. It might take a moment before you see the authentication screen from Google.
 
 If something isn't working as intended, you can use these different commands to figure the problem out:
 

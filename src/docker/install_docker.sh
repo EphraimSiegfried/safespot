@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script installs docker and docker compose since each service is in it's own container
+
 set -e
 # Add Docker's official GPG key:
 apt-get update && apt-get upgrade -y

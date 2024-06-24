@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# This script checks, if all the environment variables are able to be used. If not, then an error occurs with the specific variable
+
 check_vars() {
 	local required_vars=("$@")
 

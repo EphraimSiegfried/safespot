@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Sets up SSH
+
 # Ensure script stops on errors and missing env variables
 set -e
 

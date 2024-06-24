@@ -1,6 +1,5 @@
 services:
   traefik:
-    container_name: ${SERVICES_TRAEFIK_CONTAINER_NAME:-traefik}
     hostname: ${SERVICES_TRAEFIK_HOSTNAME:-traefik}
     healthcheck:
       test: ["CMD", "traefik", "healthcheck", "--ping"]
@@ -44,9 +43,6 @@ services:
         target: 443
         published: 443
         protocol: tcp
-    restart: unless-stopped
-    security_opt:
-      - no-new-privileges:true
     volumes:
       - "/etc/localtime:/etc/localtime:ro"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
@@ -54,6 +50,14 @@ services:
       - "./traefik/traefik.yml:/traefik.yml:ro"
       - "./traefik/acme_letsencrypt.json:/acme_letsencrypt.json"
       - "./traefik/dynamic_conf.yml:/dynamic_conf.yml"
+
+#networks:
+#  proxy:
+#    external: true
+#    name: proxy
+#  crowdsec:
+#    external: true
+#    name: crowdsec
 
 networks:
   proxy:

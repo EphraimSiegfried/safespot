@@ -1,7 +1,6 @@
 services:
   traefik-forward-auth:
     image: "thomseddon/traefik-forward-auth:2"
-    container_name: "traefik-forward-auth"
     hostname: "traefik-forward-auth"
     secrets:
       - source: traefik-forward-auth-v8
@@ -20,7 +19,6 @@ services:
       - "traefik.http.middlewares.traefik-forward-auth.forwardauth.address=http://traefik-forward-auth:4181"
       - "traefik.http.middlewares.forward-auth.forwardauth.authResponseHeaders=X-Forwarded-User"
       - "traefik.http.routers.traefik-forward-auth.middlewares=traefik-forward-auth@docker"
-    restart: unless-stopped
     networks:
       - proxy
 

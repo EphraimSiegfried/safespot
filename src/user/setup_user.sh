@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# You can use this script if you want to setup a new user
+
 # Ensure script stops on errors and missing env variables
 set -e
 SCRIPT_DIR=$(dirname $(realpath $0))
@@ -10,6 +12,5 @@ check_vars "${REQUIRED_VARS[@]}"
 # Install zsh for a more friendly shell environment
 apt-get update && apt-get upgrade -y
 apt-get install zsh -y
-apt-get install unattended-upgrades -y
 # Add a new user to the sudo group, create a home directory and set zsh as default shell
 useradd -m -g sudo -s /usr/bin/zsh $ADMIN

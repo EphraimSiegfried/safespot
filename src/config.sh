@@ -18,7 +18,7 @@ export FORWARD_AUTH_USER_EMAIL2=admin@mail.com # whitelist email2 (this can be e
 # The email address associated with the Cloudflare account for managing DNS and other services
 export CF_API_EMAIL=admin@mail.com
 
-# Information used for forward authentication which you can find on https://console.cloud.google.com
+# Information used for forward authentication which you can find on https://console.cloud.google.com/apis/credentials
 export GOOGLE_CLIENT_ID=your-google-client-id #
 export GOOGLE_CLIENT_SECRET=your-google-client-source
 

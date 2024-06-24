@@ -194,7 +194,7 @@ sudo src/unattended_upgrades/setup_upgrades.sh
 ### Deploy your own services
 
 All the docker compose files are located in **/opt/docker**. You can define your own docker compose files in there and start them. Make sure your containers are communicating with Traefik via the **proxy** network, such that traefik can route requests to your container.
-Use the following command to deploy a new service `docker stack deploy -c /opt/docker/<your-service>/docker-compose.yml traefik-stack`
+Use the following command to deploy a new service `docker stack deploy -c /opt/docker/<your-service>/docker-compose.yml traefik-stack`. The same command is used to update an existing one
 
 ## License
 

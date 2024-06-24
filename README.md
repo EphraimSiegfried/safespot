@@ -70,11 +70,11 @@ Since we're using forward authentication from Google, you will need to add the d
 4. If it's a new project, Google will tell you to fill out the OAuth consent screen. Do that
 5. Return back to 'Credentials' and press the button 'Create Credentials -> OAuth client ID'.
 6. Choose 'Web Application', fill in the name of your app, skip 'Authorized JavaScript origins' and fill out 'Authorized redirect URIs with the following domains:
-   - https://whoami.<your-domain>.com/\_oauth
-   - https://prom.<your-domain>.com/\_oauth
-   - https://monitor.<your-domain>.com/\_oauth
-   - https://traefik.<your-domain>.com/\_oauth
-   - https://alerts.<your-domain>.com/\_oauth
+   - https://whoami.\<your-domain\>.com/\_oauth
+   - https://prom.\<your-domain\>.com/\_oauth
+   - https://monitor.\<your-domain\>.com/\_oauth
+   - https://traefik.\<your-domain\>.com/\_oauth
+   - https://alerts.\<your-domain\>.com/\_oauth
 7. Once you clicked 'Create' on the bottom, a new window will pop up with 'Client ID' and 'Client secret'. Write them both down because you will need them later.
 
 ### Installing safespot on the server

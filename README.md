@@ -84,7 +84,7 @@ Since we're using forward authentication from Google, you will need to add the d
 Gain access to your server console and clone this repository by typing in those commands
 
 ```bash
-sudo apt update && sudo apt upgrade && sudo apt install git -y
+sudo apt update && sudo apt upgrade -y && sudo apt install git -y
 git clone https://github.com/EphraimSiegfried/safespot.git
 cd safespot
 chmod -R +x src # make all files executable

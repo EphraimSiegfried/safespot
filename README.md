@@ -88,8 +88,7 @@ sudo apt update && sudo apt upgrade -y && sudo apt install git -y
 git clone https://github.com/EphraimSiegfried/safespot.git
 cd safespot
 chmod -R +x src # make all files executable
-source src/config.sh
-sudo env # to check that they're there
+
 ```
 
 > [!NOTE]
@@ -97,12 +96,18 @@ sudo env # to check that they're there
 
 #### Adjust the environment variables
 
-For setting up safespot, we rely on environment variables and docker secrets. Environment variables are specified in `src/config.sh`. This is the only file which has to be modified. Please open it and modify the values.
+For setting up safespot, we rely on environment variables and docker secrets. Environment variables are specified in `src/config.sh`. This is the only file which has to be modified. Please open it and modify the values with your favorite text editor.
+
+Once you have modified the values enter these commands
+```bash
+source src/config.sh
+sudo env # to check that they're there
+```
 
 Two things to note when using environment variables:
 
-- When you want to change the value of an env variable, change the value and run the script again
-- With the command `echo $VARIABLE` (ex. `echo $DOMAIN_NAME`), you can look at the value of it
+- When you want to change the value of an env variable, change the value and `source src/config.sh`
+- With the command `echo $VARIABLE` (e.g. `echo $DOMAIN_NAME`), you can look at the value of it
 
 #### Enabling SSH
 

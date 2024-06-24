@@ -180,6 +180,9 @@ If leaving the logs unattended, they can get big and eat a lot of hard drive spa
 
 ```bash
 sudo src/logrotation/setup_logrotate.sh
+sudo logrotate -d /etc/logrotate.d/traefik # check if it worked
+sudo logrotate /etc/logrotate.d/traefik # manually rotate logs
+sudo /usr/sbin/logrotate -f /etc/logrotate.conf # test the new cronjob
 ```
 
 #### Set up unattended-upgrades

@@ -132,7 +132,8 @@ ssh <your-admin-name>@<your-domain>
 Now on the server, if you want to disable password authentication (recommended):
 
 ```bash
-sudo echo "PasswordAuthentication no" >> /etc/ssh/sshd_config.d/sshd.conf
+sudo bash -c "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config.d/sshd.conf"
+sudo service sshd restart
 ```
 
 #### Create certificates for wildcards

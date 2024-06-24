@@ -1,0 +1,14 @@
+/var/log/traefik/*.log {
+    daily
+    rotate 7
+    missingok
+    notifempty
+    compress
+    delaycompress
+    create 0644 root root
+    sharedscripts
+    postrotate
+        TRAEFIK_CONTAINER_ID=\$(sudo docker ps --filter "name=traefik-stack_traefik.1" --format "{{.ID}}" | head -n 1)
+        docker exec "\$TRAEFIK_CONTAINER_ID" killall -HUP traefik
+    endscript
+}

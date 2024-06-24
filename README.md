@@ -21,17 +21,15 @@ The stack can be easily extended with custom docker compose files.
   - [Prepare Setup](#prepare-setup)
   - [Buy a domain and configure DNS](#buy-a-domain-and-configure-dns)
   - [Create the forward subdomains on Google](#create-the-forward-subdomains-on-google)
-  - [Generate an SSH key-pair](#generate-an-ssh-key-pair)
   - [Installing safespot on the server](#installing-safespot-on-the-server)
-    - [Creating a user](#creating-a-user)
+    - [Adjust the environment variables](#adjust-the-environment-variables)
     - [Enabling SSH](#enabling-ssh)
     - [Create certificates for wildcards](#create-certificates-for-wildcards)
-    - [Adjust the environment variables](#adjust-the-environment-variables)
     - [Deploy the docker stack](#deploy-the-docker-stack)
     - [Set up Logrotation and cronjob](#set-up-logrotation-and-cronjob)
     - [Set up unattended-upgrades](#set-up-unattended-upgrades)
   - [Deploy your own services](#deploy-your-own-services)
-  - [License](#license)
+- [License](#license)
 
 ## Requirements
 
@@ -65,108 +63,108 @@ Next go to your 'Overview' page, scroll to the bottom and click on the button 'G
 ### Create the forward subdomains on Google
 
 Since we're using forward authentication from Google, you will need to add the different subdomains to the service. This is how you have to do it:
+
 1. Head over to https://console.developers.google.com
 2. Create a new project if you don't already have one
 3. Click on the navigation menu and choose 'Credentials'
 4. If it's a new project, Google will tell you to fill out the OAuth consent screen. Do that
 5. Return back to 'Credentials' and press the button 'Create Credentials -> OAuth client ID'.
 6. Choose 'Web Application', fill in the name of your app, skip 'Authorized JavaScript origins' and fill out 'Authorized redirect URIs with the following domains:
-   - https://whoami.<your-domain>.com/_oauth
-   - https://prom.<your-domain>.com/_oauth
-   - https://monitor.<your-domain>.com/_oauth
-   - https://traefik.<your-domain>.com/_oauth
-   - https://alerts.<your-domain>.com/_oauth
+   - https://whoami.<your-domain>.com/\_oauth
+   - https://prom.<your-domain>.com/\_oauth
+   - https://monitor.<your-domain>.com/\_oauth
+   - https://traefik.<your-domain>.com/\_oauth
+   - https://alerts.<your-domain>.com/\_oauth
 7. Once you clicked 'Create' on the bottom, a new window will pop up with 'Client ID' and 'Client secret'. Write them both down because you will need them later.
-
-### Generate an SSH key-pair
-
-To later be able to access the server remotely, we can use SSH. Safespot configures the SSH server such that the user can only authenticate with [public key authentication](https://www.ssh.com/academy/ssh/public-key-authentication). For this we need to generate a key-pair. Install ssh on your operating system, then create a key-pair with this command:
-
-```bash
-# The following uses an elliptic curve crypto algorithm to generate a key-pair
-ssh-keygen -t ed25519
-```
-
-Put the output of the following command in the $SSH_PUBLIC_KEY environment variable
-
-```bash
-cat ~/.ssh/id_ed25519.pub
-```
 
 ### Installing safespot on the server
 
 Gain access to your server console and clone this repository by typing in those commands
 
 ```bash
-sudo apt update && sudo apt upgrade && sudo apt install git
+sudo apt update && sudo apt upgrade -y && sudo apt install git -y
 git clone https://github.com/EphraimSiegfried/safespot.git
 cd safespot
-chmod +x ./src/config.sh && chmod +x ./src/setup_env.sh
-source ./src/config.sh
-sudo env # to check that they're there
+chmod -R +x src # make all files executable
+
 ```
 
 > [!NOTE]
 > For the following commands make sure you are in the safespot directory
 
-#### Creating a user
+#### Adjust the environment variables
 
-Create a new user and set zsh as the default shell with this command. This will be your main user with the name set to the env variable $ADMIN.
+For setting up safespot, we rely on environment variables and docker secrets. Environment variables are specified in `src/config.sh`. This is the only file which has to be modified. Please open it and modify the values with your favorite text editor.
 
+Once you have modified the values enter these commands
 ```bash
-chmod +x ./src/user/setup_user.sh
-sudo ./src/user/setup_user.sh
-# Create a password for your account
-passwd $ADMIN
+source src/config.sh
+sudo env # to check that they're there
 ```
+
+Two things to note when using environment variables:
+
+- When you want to change the value of an env variable, change the value and `source src/config.sh`
+- With the command `echo $VARIABLE` (e.g. `echo $DOMAIN_NAME`), you can look at the value of it
 
 #### Enabling SSH
 
 Next, we can set up the firewall and SSH server for remote access. Execute the following commands:
 
 ```bash
-chmod +x ./src/firewall/setup_firewall.sh && chmod +x ./src/ssh_server/setup_ssh.sh
-sudo ./src/firewall/setup_firewall.sh
-sudo ./src/ssh_server/setup_ssh.sh
+sudo src/firewall/setup_firewall.sh
+sudo src/ssh_server/setup_ssh.sh
 ```
 
-Test if you can log in to your server remotely by entering `ssh <your-admin-name>@<your-domain>`
+Safespot configures the SSH server such that the user can only authenticate with [public key authentication](https://www.ssh.com/academy/ssh/public-key-authentication). For this we need to generate a key-pair. Install ssh on your operating system (on the computer with which you want to log into your server), then enter the following commands:
+
+```bash
+# The following uses an elliptic curve crypto algorithm to generate a key-pair
+ssh-keygen -t ed25519
+# you will have to enter your password which you have set on your server
+ssh-copy-id <your-admin-name>@<your-domain>
+# Test if you can log in
+ssh <your-admin-name>@<your-domain>
+```
+
+Now on the server, if you want to disable password authentication (recommended):
+
+```bash
+sudo bash -c "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config.d/sshd.conf"
+sudo service sshd restart
+```
 
 #### Create certificates for wildcards
 
 So we don't have to add a certificate for every subdomain, we can use 'letsencrypt' to handle that for us. Following has to be done:
+
 ```bash
 apt-get install letsencrypt # installs CertBot
 certbot certonly --manual --preferred-challenges=dns -d '*.<your-domain>.com' # runs certbot
 ```
+
 Next, we have to go to Cloudflare and create a new DNS record with the type TXT. To see that it worked, you can use the homepage that CertBot suggests
-
-#### Adjust the environment variables
-
-For our different Docker services, we're using environment variables. With them, we only have to set the correct variable once and not have to change it several times.
-Open the file ``src/config.sh`` and adjust the different values. Once done, execute it with ``./src/config.sh``.
-When executing it, the env variables get exported so the Docker stack can find them, and they get written into the file ``/opt/docker/.env`` so they can be looked at if they were forgotten.
-Two things to note when using environment variables:
-- When you want to change the value of an env variable, change the value and run the script again
-- With the command ``echo $VARIABLE`` (ex. ``echo $DOMAIN_NAME``), you can look at the value of it 
 
 #### Deploy the docker stack
 
 Finally, the following commands will set up the single node Docker Swarm, which serves as a secure entry point for hosting your own applications.
 
 ```bash
-chmod +x ./src/docker/install_docker.sh && chmod +x ./src/docker/setup_compose.sh
 sudo ./src/docker/install_docker.sh
 sudo docker swarm init # creates a single node docker swarm
+
+set +o history # temporarily turn off history (commands won't be saved)
 echo "your_cloudflare_api" | sudo docker secret create cloudflare_api - # creates the secret for your cloudflare_api
 echo "your_alertmanagerpassword" | sudo docker secret create alertmanager_password - # creates the secret for your alertmanager_password
-sudo touch /opt/docker/forward-auth/traefik-forward-auth
+set -o history # turn it back on
+
 sudo ./src/docker/setup_compose.sh
 ```
 
 To test if everything worked, enter 'whoami.<your-domain>.com'. It might take a moment before you see the authentication screen from Google.
 
 If something isn't working as intended, you can use these different commands to figure the problem out:
+
 ```bash
 sudo docker stack ls # list all stacks (should be one)
 sudo docker stack services traefik-stack # list services inside stack. Under 'Replicas', each entry should have a 1/1. If not, then something hasn't worked
@@ -176,45 +174,27 @@ sudo docker service logs <service-name> # look at the logs of a service
 
 #### Set up Logrotation and cronjob
 
-If leaving the logs unattended, they can get big and eat a lot of hard drive space up. For that we can set up a logrotation that rotates the logs in specific intervals
-1. Create logrotate config file with ``sudo nano /etc/logrotate.d/traefik``. Content is:
-```bash
-/var/log/traefik/*.log {
-    daily
-    rotate 7
-    missingok
-    notifempty
-    compress
-    delaycompress
-    create 0644 root root
-    sharedscripts
-    postrotate
-        TRAEFIK_CONTAINER_ID=$(sudo docker ps --filter "name=traefik-stack_traefik.1" --format "{{.ID}}" | head -n 1)
-        docker exec "$TRAEFIK_CONTAINER_ID" killall -HUP traefik
-    endscript
-}
-```
-2. Check with ``sudo logrotate -d /etc/logrotate.d/traefik`` to see, if everything worked
-3. If there aren't any errors, use ``sudo logrotate /etc/logrotate.d/traefik`` to manually rotate logs
+If leaving the logs unattended, they can get big and eat a lot of hard drive space up. For that we can set up a logrotation that rotates the logs in specific intervals:
 
-We can set up a cronjob to automate it:
-1. ``crontab -e`` to open crontab file
-2. Add ``0 0 * * * /usr/sbin/logrotate -f /etc/logrotate.conf >/dev/null 2>&1`` to the end
-3. ``crontab -l`` to list the file and see, if the new line is in there
-4. ``/usr/sbin/logrotate -f /etc/logrotate.conf`` to test the new cronjob
-5. To check, if forcing the new job worked, we go to the log folder (``cd /var/log/traefik``) and inspect the log files (``ls -ltr``).
+```bash
+sudo src/logrotation/setup_logrotate.sh
+sudo logrotate -d /etc/logrotate.d/traefik # check if it worked
+sudo logrotate /etc/logrotate.d/traefik # manually rotate logs
+sudo /usr/sbin/logrotate -f /etc/logrotate.conf # test the new cronjob
+```
 
 #### Set up unattended-upgrades
 
-This package provides the functionality to automatically download and install important security patches. This is how you can set it up:
+The unattended-upgrades package provides the functionality to automatically download and install important security patches. This is how you can set it up:
+
 ```bash
-sudo dpkg-reconfigure -plow unattended-upgrades
+sudo src/unattended_upgrades/setup_upgrades.sh
 ```
 
 ### Deploy your own services
 
 All the docker compose files are located in **/opt/docker**. You can define your own docker compose files in there and start them. Make sure your containers are communicating with Traefik via the **proxy** network, such that traefik can route requests to your container.
-Use the following command to deploy a new service ``docker stack deploy -c /opt/docker/<your-service>/docker-compose.yml traefik-stack``
+Use the following command to deploy a new service `docker stack deploy -c /opt/docker/<your-service>/docker-compose.yml traefik-stack`
 
 ## License
 

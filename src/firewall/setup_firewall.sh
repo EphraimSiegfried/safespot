@@ -7,7 +7,7 @@ apt-get install ufw -y
 ufw default deny incoming
 
 # Allow ssh
-ufw allow OpenSSH
+ufw allow 22/tcp
 
 # Allow ports 80 & 443 for traefik
 ufw allow 80/tcp

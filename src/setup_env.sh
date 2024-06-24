@@ -1,9 +1,7 @@
 #!/bin/bash
 
 # This script copies all the environment variables into the sudoers file
-echo -e "Defaults env_keep += \"ADMIN\"" | sudo tee -a /etc/sudoers
 echo -e "Defaults env_keep += \"DOMAIN_NAME\"" | sudo tee -a /etc/sudoers
-echo -e "Defaults env_keep += \"SSH_PUBLIC_KEY\"" | sudo tee -a /etc/sudoers
 echo -e "Defaults env_keep += \"ALERTS_SMTP_SERVER\"" | sudo tee -a /etc/sudoers
 echo -e "Defaults env_keep += \"ALERTS_SMTP_PORT\"" | sudo tee -a /etc/sudoers
 echo -e "Defaults env_keep += \"ALERTS_SENDER_EMAIL\"" | sudo tee -a /etc/sudoers

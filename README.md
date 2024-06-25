@@ -160,6 +160,8 @@ sudo docker service inspect <service-name> # inspect a service to get detailed i
 sudo docker service logs <service-name> # look at the logs of a service
 ```
 
+Lastly you will have to go to ``/opt/docker/alertmanager/config/alertmanager.yml``. There you will have to change the domain of ``smtp_from`` and the ``receivers-email``. If you want to use a different smtp server than outlook, then you will have to change that as well.
+
 #### Set up Logrotation and cronjob
 
 If leaving the logs unattended, they can get big and eat a lot of hard drive space up. For that we can set up a logrotation that rotates the logs in specific intervals:

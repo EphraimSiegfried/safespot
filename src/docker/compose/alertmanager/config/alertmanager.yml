@@ -1,9 +1,9 @@
 global:
   # The smarthost and SMTP sender used for mail notifications.
-  smtp_smarthost: '${ALERTS_SMTP_SERVER}:${ALERTS_SMTP_PORT}'
-  smtp_from: '${ALERTS_SENDER_EMAIL}'
-  smtp_auth_username: '${ALERTS_SENDER_EMAIL}'
-  smtp_auth_password: "${ALERTMANAGER_PASS}"
+  smtp_smarthost: "smtp-mail.outlook.com:587"
+  smtp_from: "alerts.your-domain@outlook.com"
+  smtp_auth_username: "alerts.your-domain@outlook.com"
+  smtp_auth_password: "Powerhouse"
 
 # The root route on which each incoming alert enters.
 route:
@@ -14,7 +14,7 @@ route:
   receiver: team-X-mails
 
 receivers:
-- name: 'team-X-mails'
+- name: "team-X-mails"
   email_configs:
-  - to: '${ALERTS_RECEIVER_EMAIL}'
+  - to: "your-email@mail.com"
     send_resolved: true

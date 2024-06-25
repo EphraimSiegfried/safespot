@@ -5,12 +5,6 @@
 # The domain name which points to this server
 export DOMAIN_NAME=example.com
 
-# The email settings for server alerts (e.g. Alert: extrem high CPU utilization)
-export ALERTS_SMTP_SERVER=smtp-mail.outlook.com           # this is the smtp-server for outlook but any mail server can be used
-export ALERTS_SMTP_PORT=587                               # this is the smtp-server port
-export ALERTS_SENDER_EMAIL=alerts.your-domain@outlook.com # this is the email address it gets sent from
-export ALERTS_RECEIVER_EMAIL=admin@mail.com               # this is your user email
-
 # The email address of the user which should have access to restricted sites (such as admin panel)
 export FORWARD_AUTH_USER_EMAIL1=admin@mail.com # whitelist email1
 export FORWARD_AUTH_USER_EMAIL2=admin@mail.com # whitelist email2 (this can be either the same email or a different one)

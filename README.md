@@ -151,7 +151,15 @@ sudo ./src/docker/setup_compose.sh
 
 To test if everything worked, enter 'whoami.\<your-domain\>.com'. It might take a moment before you see the authentication screen from Google.
 
-If something isn't working as intended, you can use these different commands to figure the problem out:
+Lastly you will have to go to ``/opt/docker/alertmanager/config/alertmanager.yml``. There you will have to change the following things:
+- Domain in ``smtp_from``
+- Domain in ``smtp_auth_username``
+- Password in ``smtp_auth_password``
+- Email in ``receivers-email``.
+
+If you want to use a different smtp server than outlook, then you will have to change that as well.
+
+If something isn't working as intended, you can use these different commands to figure out the problem:
 
 ```bash
 sudo docker stack ls # list all stacks (should be one)
@@ -159,8 +167,6 @@ sudo docker stack services traefik-stack # list services inside stack. Under 'Re
 sudo docker service inspect <service-name> # inspect a service to get detailed information
 sudo docker service logs <service-name> # look at the logs of a service
 ```
-
-Lastly you will have to go to ``/opt/docker/alertmanager/config/alertmanager.yml``. There you will have to change the domain of ``smtp_from`` and the ``receivers-email``. If you want to use a different smtp server than outlook, then you will have to change that as well.
 
 #### Set up Logrotation and cronjob
 

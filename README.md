@@ -143,7 +143,6 @@ sudo docker swarm init # creates a single node docker swarm
 
 set +o history # temporarily turn off history (commands won't be saved)
 echo "your_cloudflare_api" | sudo docker secret create cloudflare_api - # creates the secret for your cloudflare_api
-echo "your_alertmanagerpassword" | sudo docker secret create alertmanager_password - # creates the secret for your alertmanager_password
 set -o history # turn it back on
 
 sudo ./src/docker/setup_compose.sh

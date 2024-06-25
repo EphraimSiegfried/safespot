@@ -1,8 +1,8 @@
 global:
   # The smarthost and SMTP sender used for mail notifications.
   smtp_smarthost: "smtp-mail.outlook.com:587"
-  smtp_from: "alerts.your-domain@outlook.com"
-  smtp_auth_username: "alerts.your-domain@outlook.com"
+  smtp_from: "alert.your-domain@outlook.com"
+  smtp_auth_username: "alert.your-domain@outlook.com"
   smtp_auth_password: "Powerhouse"
 
 # The root route on which each incoming alert enters.

@@ -20,7 +20,7 @@ export CF_API_EMAIL=admin@mail.com
 
 # Information used for forward authentication which you can find on https://console.cloud.google.com/apis/credentials
 export GOOGLE_CLIENT_ID=your-google-client-id #
-export GOOGLE_CLIENT_SECRET=your-google-client-source
+export GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 # Adds the different environment variables to the visudo file
 sudo ./src/setup_env.sh

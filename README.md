@@ -52,10 +52,13 @@ Then create an account on [Cloudflare](https://www.cloudflare.com/) and [change 
 
 Once Cloudflare is your name server, go to Cloudflare's dashboard, click DNS > Records. Then add the following records:
 
-- A – \<your-domain\> – \<server-public-ip\> – proxy disabled
-- CNAME – \* – \<your-domain\> – proxy disabled
+- A – \<your-domain\> – \<server-public-ip\> – proxy enabled
+- CNAME – \* – \<your-domain\> – proxy enabled
 
 The first entry ensures that your domain name points to your server and the second entry ensures that all subdomains (e.g example.your-domain.com) will also point to your server, also known as wildcard DNS record.
+
+To be able to use Cloudflare as a proxy, you need to go to SSL/TLS -> Overview. There you switch the mode to ``Full (strict)``. If you don't do that, you will get the error ``ERR_TOO_MANY_REDIRECTS`` since there will be a loop from http to https and back.
+In addition, the ``trustedIPs`` under ``forwardedHeaders`` in the file ``traefik/traefik/traefik.yml`` might change from time to time. So keep that list up to date.
 
 Next go to your 'Overview' page, scroll to the bottom and click on the button 'Get your API token'. Then under 'API Keys', click 'View' next to 'Global API Key'. This API key you will need for Traefik, so write it down somewhere.
 

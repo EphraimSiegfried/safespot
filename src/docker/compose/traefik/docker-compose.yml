@@ -51,14 +51,6 @@ services:
       - "./traefik/acme_letsencrypt.json:/acme_letsencrypt.json"
       - "./traefik/dynamic_conf.yml:/dynamic_conf.yml"
 
-#networks:
-#  proxy:
-#    external: true
-#    name: proxy
-#  crowdsec:
-#    external: true
-#    name: crowdsec
-
 networks:
   proxy:
     name: ${NETWORKS_PROXY_NAME:-proxy}

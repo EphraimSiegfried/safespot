@@ -1,6 +1,13 @@
-version: "3"
 services:
   watchtower:
-    image: containrrr/watchtower
+    image: "containrrr/watchtower"
+    hostname: "watchtower"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
+    command: --interval 86400 # every 24h (default number in sec)

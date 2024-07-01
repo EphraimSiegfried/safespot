@@ -17,6 +17,12 @@ services:
       GF_INSTALL_PLUGINS: grafana-piechart-panel
     networks:
       - proxy
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
 
 networks:
   proxy:

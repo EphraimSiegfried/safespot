@@ -50,6 +50,12 @@ services:
       - "./traefik/traefik.yml:/traefik.yml:ro"
       - "./traefik/acme_letsencrypt.json:/acme_letsencrypt.json"
       - "./traefik/dynamic_conf.yml:/dynamic_conf.yml"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
 
 networks:
   proxy:

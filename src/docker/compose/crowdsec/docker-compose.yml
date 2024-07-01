@@ -19,6 +19,12 @@ services:
       - "/var/log/traefik:/var/log/traefik:ro"
       - "./crowdsec/config:/etc/crowdsec"
       - "./crowdsec/data:/var/lib/crowdsec/data"
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
   traefik_crowdsec_bouncer:
     depends_on:
       - crowdsec
@@ -28,7 +34,12 @@ services:
     networks:
       crowdsec:
         ipv4_address: ${SERVICES_TRAEFIK_CROWDSEC_BOUNCER_NETWORKS_CROWDSEC_IPV4:-172.31.254.252}
-    restart: unless-stopped
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+        delay: 5s
+        max_attempts: 3
 networks:
   crowdsec:
     external: true

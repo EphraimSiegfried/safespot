@@ -25,6 +25,7 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
+
   traefik_crowdsec_bouncer:
     depends_on:
       - crowdsec
@@ -40,6 +41,7 @@ services:
         condition: any
         delay: 5s
         max_attempts: 3
+
 networks:
   crowdsec:
     external: true

@@ -11,8 +11,7 @@ services:
     secrets:
       - cloudflare_api
     environment:
-      - CF_API_EMAIL=${CF_API_EMAIL}
-      - CF_API_KEY=/run/secrets/cloudflare_api
+      - CF_DNS_API_TOKEN=YourAPIToken
     labels:
       - "traefik.docker.network=proxy"
       - "traefik.enable=true"
@@ -72,7 +71,3 @@ networks:
       config:
       - subnet: ${NETWORKS_CROWDSEC_SUBNET_IPV4:-172.31.0.0/16}
     attachable: true
-
-secrets:
-  cloudflare_api:
-    external: true

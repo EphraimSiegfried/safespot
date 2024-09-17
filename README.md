@@ -60,7 +60,7 @@ The first entry ensures that your domain name points to your server and the seco
 To be able to use Cloudflare as a proxy, you need to go to SSL/TLS -> Overview. There you switch the mode to ``Full (strict)``. If you don't do that, you will get the error ``ERR_TOO_MANY_REDIRECTS`` since there will be a loop from http to https and back.
 In addition, the ``trustedIPs`` under ``forwardedHeaders`` in the file ``traefik/traefik/traefik.yml`` might change from time to time. So keep that list up to date.
 
-Next go to your 'Overview' page, scroll to the bottom and click on the button 'Get your API token'. Then under 'API Keys', click 'View' next to 'Global API Key'. This API key you will need for Traefik, so write it down somewhere.
+Next go to 'My Profile' -> 'API Tokens' and then 'Create Token'. In there you can choose the 'Edit zone DNS' template. Under 'Permissions', add Zone/Zone/Read. Under 'Zone Resources' you can either include all zones or only a specific one. Then save and copy the API token since you will need to add that to the docker-compose.yml for traefik.
 
 ### Create the forward subdomains on Google
 
@@ -143,10 +143,6 @@ Finally, the following commands will set up the single node Docker Swarm, which 
 ```bash
 sudo ./src/docker/install_docker.sh
 sudo docker swarm init # creates a single node docker swarm
-
-set +o history # temporarily turn off history (commands won't be saved)
-echo "your_cloudflare_api" | sudo docker secret create cloudflare_api - # creates the secret for your cloudflare_api
-set -o history # turn it back on
 
 sudo ./src/docker/setup_compose.sh
 ```
